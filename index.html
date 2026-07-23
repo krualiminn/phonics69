@@ -1,0 +1,1415 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบโครงการพัฒนาทักษะภาษาอังกฤษ โรงเรียนนิคมสร้างตนเองแว้ง</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { 50: '#f0fdf4', 100: '#dcfce7', 500: '#22c55e', 600: '#16a34a', 700: '#15803d', 800: '#166534', 900: '#14532d' }
+                    },
+                    fontFamily: { sans: ['Sarabun', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Fonts, Charts, Alerts, Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body { font-family: 'Sarabun', sans-serif; background-color: #f3f4f6; }
+        #sidebar { transition: transform 0.3s ease-in-out; }
+        .view-section { display: none; animation: fadeIn 0.3s; }
+        .view-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .table-container::-webkit-scrollbar { height: 6px; width: 6px;}
+        .table-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        
+        /* Loader Styles */
+        #global-loader { position: fixed; inset: 0; background: rgba(255,255,255,0.9); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .spinner { border: 4px solid #dcfce7; border-top: 4px solid #16a34a; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Global Loader -->
+    <div id="global-loader">
+        <div class="spinner mb-4"></div>
+        <div class="text-brand-700 font-medium" id="loader-text">กำลังโหลดข้อมูล...</div>
+    </div>
+
+    <!-- Public Container -->
+    <div id="public-container" class="min-h-screen bg-brand-50 flex flex-col relative active view-mode">
+        <header class="bg-brand-800 text-white shadow-md p-4 flex justify-between items-center z-10">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="showLandingPage()">
+                <img src="https://lh5.googleusercontent.com/d/1-vcO8HJyQRFMQLd8E0bktJcZ0EIf7Fbv" alt="โลโก้โรงเรียน" class="w-12 h-12 rounded-full border-2 border-white object-cover bg-white">
+                <div>
+                    <h1 class="text-lg md:text-xl font-bold leading-tight">Phonics Skills</h1>
+                    <p class="text-xs text-brand-200">โรงเรียนนิคมสร้างตนเองแว้ง</p>
+                </div>
+            </div>
+            <button onclick="showLogin()" class="bg-white text-brand-700 hover:bg-gray-100 px-4 py-2 rounded-lg font-medium shadow transition text-sm md:text-base">
+                <i class="fas fa-sign-in-alt mr-2"></i>เข้าสู่ระบบ
+            </button>
+        </header>
+
+        <main class="flex-1 p-4 md:p-8 w-full max-w-7xl mx-auto flex flex-col justify-center">
+            
+            <!-- Landing Page Section -->
+            <div id="public-landing-section" class="flex flex-col items-center justify-center text-center animate-[fadeIn_0.5s] w-full py-10">
+                <img src="https://lh5.googleusercontent.com/d/1-vcO8HJyQRFMQLd8E0bktJcZ0EIf7Fbv" alt="Logo" class="w-32 h-32 md:w-48 md:h-48 rounded-full shadow-xl border-4 border-white mb-6 bg-white object-cover">
+                
+                <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-brand-900 mb-4 drop-shadow-sm tracking-tight leading-snug md:whitespace-nowrap">
+                    โครงการพัฒนาทักษะการอ่าน<br class="md:hidden">และการเขียนภาษาอังกฤษ
+                </h1>
+                <h2 class="text-sm sm:text-lg md:text-2xl lg:text-3xl font-semibold text-brand-600 mb-8 max-w-4xl">
+                    โดยใช้แบบฝึก Phonics ระดับชั้นประถมศึกษาปีที่ 4-6
+                </h2>
+
+                <div class="bg-white p-6 md:p-8 rounded-2xl shadow-md text-left max-w-4xl w-full mb-10 border border-brand-100">
+                    <h3 class="font-bold text-lg text-brand-800 border-b border-brand-100 pb-3 mb-4 flex items-center">
+                        <i class="fas fa-book-open text-brand-500 mr-2 text-xl"></i> รายละเอียดโครงการ
+                    </h3>
+                    <div class="grid md:grid-cols-2 gap-6 text-gray-700">
+                        <div>
+                            <p class="font-semibold text-brand-700 mb-2">วัตถุประสงค์:</p>
+                            <ul class="list-disc list-inside space-y-1 text-sm md:text-base">
+                                <li>เพื่อพัฒนาทักษะการอ่านออกเสียงภาษาอังกฤษให้ถูกต้องตามหลัก Phonics</li>
+                                <li>เพื่อพัฒนาทักษะการเขียนสะกดคำภาษาอังกฤษ</li>
+                                <li>เพื่อส่งเสริมให้นักเรียนมีเจตคติที่ดี มีความมั่นใจ และสนใจเรียนภาษาอังกฤษ</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-brand-700 mb-2">เป้าหมาย:</p>
+                            <p class="text-sm md:text-base mb-3">
+                                นักเรียนชั้นประถมศึกษาปีที่ 4–6 โรงเรียนนิคมสร้างตนเองแว้ง สพป.นราธิวาส เขต 2 
+                                สามารถอ่านออกเสียงและเขียนสะกดคำศัพท์ภาษาอังกฤษได้ถูกต้องและมีความแม่นยำมากขึ้น
+                            </p>
+                            <div class="bg-brand-50 text-brand-800 text-xs p-3 rounded-lg border border-brand-100">
+                                <b>ผู้พัฒนา:</b> ครูยา ศุภิสรา คงสำเร็จ
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="showPublicDashboard()" class="bg-brand-600 hover:bg-brand-700 text-white font-bold py-3.5 px-8 rounded-full shadow-lg transform transition hover:-translate-y-1 flex items-center gap-2 text-lg">
+                    <i class="fas fa-chart-pie"></i> ดูสรุปภาพรวมโครงการ
+                </button>
+            </div>
+
+            <!-- Public Dashboard Section -->
+            <div id="public-dashboard-section" class="bg-white rounded-2xl shadow-sm p-4 md:p-6 mb-6 hidden animate-[fadeIn_0.5s]">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 border-b pb-4 gap-4">
+                    <div>
+                        <h2 class="text-xl md:text-2xl font-bold text-brand-800 border-l-4 border-brand-500 pl-3">แดชบอร์ดสรุปภาพรวมโครงการ</h2>
+                        <p class="text-gray-500 text-sm pl-4 mt-1">ข้อมูลเชิงสถิติโครงการพัฒนาทักษะการอ่านและการเขียนภาษาอังกฤษ (Phonics)</p>
+                    </div>
+                    <button onclick="showLandingPage()" class="text-brand-600 hover:text-brand-800 text-sm font-medium px-4 py-2 bg-brand-50 hover:bg-brand-100 rounded-lg transition whitespace-nowrap">
+                        <i class="fas fa-home mr-1"></i> กลับหน้าแรก
+                    </button>
+                </div>
+                
+                <!-- Filters -->
+                <div class="flex flex-wrap gap-4 mb-6 bg-gray-50 p-3 rounded-xl border border-gray-200">
+                    <select id="pub-phase-filter" class="border border-gray-300 rounded-lg px-4 py-2 text-sm bg-white focus:ring-2 focus:ring-brand-500 outline-none" onchange="renderPublicDashboard()">
+                        <option value="all">เปรียบเทียบ (ก่อนเรียน - หลังเรียน)</option>
+                        <option value="pre">ผลคะแนนก่อนเรียน</option>
+                        <option value="post">ผลคะแนนหลังเรียน</option>
+                    </select>
+                    <select id="pub-class-filter" class="border border-gray-300 rounded-lg px-4 py-2 text-sm bg-white focus:ring-2 focus:ring-brand-500 outline-none" onchange="renderPublicDashboard()">
+                        <option value="all">ทุกระดับชั้น (ป.4 - ป.6)</option>
+                    </select>
+                    <select id="pub-room-filter" class="border border-gray-300 rounded-lg px-4 py-2 text-sm bg-white focus:ring-2 focus:ring-brand-500 outline-none" onchange="renderPublicDashboard()">
+                        <option value="all">ทุกห้อง</option>
+                    </select>
+                    <select id="pub-gender-filter" class="border border-gray-300 rounded-lg px-4 py-2 text-sm bg-white focus:ring-2 focus:ring-brand-500 outline-none" onchange="renderPublicDashboard()">
+                        <option value="all">ทุกเพศ</option>
+                        <option value="ชาย">นักเรียนชาย</option>
+                        <option value="หญิง">นักเรียนหญิง</option>
+                    </select>
+                </div>
+
+                <!-- Stats Container -->
+                <div id="pub-stats" class="mb-6"></div>
+
+                <!-- Charts -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+                    <div class="border rounded-xl p-4 bg-white shadow-sm hover:shadow transition"><canvas id="pubChart1"></canvas></div>
+                    <div class="border rounded-xl p-4 bg-white shadow-sm hover:shadow transition"><canvas id="pubChart2"></canvas></div>
+                    <div class="border rounded-xl p-4 bg-white shadow-sm hover:shadow transition"><canvas id="pubChart3"></canvas></div>
+                    <div class="border rounded-xl p-4 bg-white shadow-sm hover:shadow transition"><canvas id="pubChart4"></canvas></div>
+                </div>
+
+                <!-- Summary Table -->
+                <div class="border rounded-xl overflow-hidden bg-white shadow-sm">
+                    <div class="bg-brand-50 p-3 border-b"><h3 class="font-bold text-brand-800"><i class="fas fa-table mr-2"></i>ตารางสรุปผลสัมฤทธิ์ทางการเรียนอย่างละเอียด</h3></div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm whitespace-nowrap">
+                            <thead class="bg-gray-100 text-gray-600">
+                                <tr>
+                                    <th class="p-3 border-b">ระดับชั้น/ห้อง</th>
+                                    <th class="p-3 border-b text-center">นักเรียนทั้งหมด</th>
+                                    <th class="p-3 border-b text-center" title="เข้าสอบก่อนเรียน">สอบก่อน</th>
+                                    <th class="p-3 border-b text-center" title="เข้าสอบหลังเรียน">สอบหลัง</th>
+                                    <th class="p-3 border-b text-center">เฉลี่ยก่อนเรียน</th>
+                                    <th class="p-3 border-b text-center">เฉลี่ยหลังเรียน</th>
+                                    <th class="p-3 border-b text-center text-brand-600">ค่าพัฒนา</th>
+                                    <th class="p-3 border-b text-center text-purple-600">ร้อยละพัฒนา</th>
+                                    <th class="p-3 border-b text-center text-green-600">ผ่านเกณฑ์ (>=5)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pub-summary-table"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <footer class="bg-brand-900 text-brand-100 text-center p-6 mt-auto z-10 shadow-inner">
+            <p class="text-sm font-medium">พัฒนาระบบโดย: <b>ครูยา ศุภิสรา คงสำเร็จ</b></p>
+            <p class="text-xs mt-1 text-brand-300">ครูโรงเรียนนิคมสร้างตนเองแว้ง สพป.นราธิวาส เขต 2</p>
+        </footer>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="hidden fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-sm relative animate-[fadeIn_0.2s]">
+            <button onclick="hideLogin()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>
+            <div class="text-center mb-6">
+                <img src="https://lh5.googleusercontent.com/d/1-vcO8HJyQRFMQLd8E0bktJcZ0EIf7Fbv" alt="Logo" class="w-20 h-20 mx-auto rounded-full mb-3 shadow-sm border p-1 object-cover">
+                <h2 class="text-2xl font-bold text-gray-800">เข้าสู่ระบบ</h2>
+                <p class="text-sm text-gray-500 mt-1">บุคลากรโรงเรียนนิคมสร้างตนเองแว้ง</p>
+            </div>
+            <form onsubmit="handleLogin(event)">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">ชื่อผู้ใช้งาน</label>
+                    <input type="text" id="username" required class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-500 outline-none transition">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">รหัสผ่าน</label>
+                    <input type="password" id="password" required class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-500 outline-none transition">
+                </div>
+                <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-2.5 rounded-lg transition shadow-md">เข้าสู่ระบบ</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Internal App -->
+    <div id="app-container" class="flex h-screen overflow-hidden hidden view-mode">
+        
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-20 hidden md:hidden" onclick="toggleSidebar()"></div>
+
+        <!-- Sidebar -->
+        <aside id="sidebar" class="bg-brand-900 text-white w-64 flex-shrink-0 fixed inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 z-30 shadow-xl flex flex-col transition-transform duration-300">
+            <div class="p-4 flex items-center justify-between border-b border-brand-800">
+                <div class="flex items-center gap-2">
+                    <img src="https://lh5.googleusercontent.com/d/1-vcO8HJyQRFMQLd8E0bktJcZ0EIf7Fbv" class="w-8 h-8 rounded-full bg-white object-cover">
+                    <span class="font-bold tracking-wide">Phonics System</span>
+                </div>
+                <button class="md:hidden" onclick="toggleSidebar()"><i class="fas fa-times text-xl"></i></button>
+            </div>
+            
+            <div class="p-4 border-b border-brand-800 bg-brand-800 bg-opacity-30">
+                <p id="user-display-name" class="font-bold text-sm">ชื่อ-สกุล</p>
+                <div class="flex items-center gap-2 mt-1">
+                    <span id="user-display-role" class="text-[10px] bg-brand-600 px-2 py-0.5 rounded-full">ตำแหน่ง</span>
+                    <span id="user-display-room" class="text-[10px] text-brand-200">ประจำชั้น</span>
+                </div>
+            </div>
+
+            <nav class="flex-1 p-3 overflow-y-auto space-y-1" id="sidebar-menu"></nav>
+
+            <div class="p-4">
+                <button onclick="handleLogout()" class="w-full flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg transition text-sm shadow">
+                    <i class="fas fa-sign-out-alt"></i> ออกจากระบบ
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col h-screen relative overflow-hidden bg-gray-50">
+            <header class="bg-white shadow-sm flex items-center p-4 z-10">
+                <button class="md:hidden text-gray-600 hover:text-brand-600 mr-4" onclick="toggleSidebar()"><i class="fas fa-bars text-xl"></i></button>
+                <h2 id="page-title" class="text-xl font-bold text-gray-800">แดชบอร์ด</h2>
+            </header>
+
+            <main class="flex-1 overflow-x-hidden overflow-y-auto p-4 md:p-6 pb-20">
+                
+                <!-- View: Dashboard (Internal) -->
+                <section id="view-dashboard" class="view-section active">
+                    <div class="flex flex-wrap gap-3 mb-6 bg-white p-3 rounded-xl shadow-sm border border-gray-200">
+                        <select id="dash-phase-filter" class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-brand-500" onchange="renderInternalDashboard()">
+                            <option value="all">เปรียบเทียบ (ก่อนเรียน - หลังเรียน)</option>
+                            <option value="pre">ผลคะแนนก่อนเรียน</option>
+                            <option value="post">ผลคะแนนหลังเรียน</option>
+                        </select>
+                        <select id="dash-class-filter" class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-brand-500" onchange="renderInternalDashboard()">
+                            <option value="all">ทุกระดับชั้น</option>
+                        </select>
+                        <select id="dash-room-filter" class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-brand-500" onchange="renderInternalDashboard()">
+                            <option value="all">ทุกห้อง</option>
+                        </select>
+                        <select id="dash-gender-filter" class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-brand-500" onchange="renderInternalDashboard()">
+                            <option value="all">ทุกเพศ</option>
+                            <option value="ชาย">ชาย</option>
+                            <option value="หญิง">หญิง</option>
+                        </select>
+                    </div>
+                    
+                    <div id="int-stats" class="mb-6"></div>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+                        <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow"><canvas id="intChart1"></canvas></div>
+                        <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow"><canvas id="intChart2"></canvas></div>
+                        <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow"><canvas id="intChart3"></canvas></div>
+                        <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow"><canvas id="intChart4"></canvas></div>
+                    </div>
+
+                    <div class="border border-gray-200 rounded-xl overflow-hidden bg-white shadow-sm mb-6">
+                        <div class="bg-brand-50 p-3 border-b"><h3 class="font-bold text-brand-800"><i class="fas fa-table mr-2"></i>ตารางสรุปผลสัมฤทธิ์ทางการเรียนอย่างละเอียด</h3></div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm whitespace-nowrap">
+                                <thead class="bg-gray-100 text-gray-600">
+                                    <tr>
+                                        <th class="p-3 border-b">ระดับชั้น/ห้อง</th>
+                                        <th class="p-3 border-b text-center">นักเรียนทั้งหมด</th>
+                                        <th class="p-3 border-b text-center" title="เข้าสอบก่อนเรียน">สอบก่อน</th>
+                                        <th class="p-3 border-b text-center" title="เข้าสอบหลังเรียน">สอบหลัง</th>
+                                        <th class="p-3 border-b text-center">เฉลี่ยก่อนเรียน</th>
+                                        <th class="p-3 border-b text-center">เฉลี่ยหลังเรียน</th>
+                                        <th class="p-3 border-b text-center text-brand-600">ค่าพัฒนา</th>
+                                        <th class="p-3 border-b text-center text-purple-600">ร้อยละพัฒนา</th>
+                                        <th class="p-3 border-b text-center text-green-600">ผ่านเกณฑ์ (>=5)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="int-summary-table"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- View: Scores -->
+                <section id="view-scores" class="view-section">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                        <div class="p-4 bg-gray-50 border-b flex flex-wrap justify-between items-center gap-4 rounded-t-xl">
+                            <div class="flex flex-wrap items-center gap-3">
+                                <h3 class="font-bold text-gray-800"><i class="fas fa-edit mr-2 text-brand-600"></i>บันทึกคะแนน</h3>
+                                <select id="score-class-filter" class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-brand-500" onchange="loadScoresTable()"></select>
+                                <select id="score-room-filter" class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-brand-500" onchange="loadScoresTable()">
+                                    <option value="all">ทุกห้อง</option>
+                                    <option value="1">ห้อง 1</option>
+                                    <option value="2">ห้อง 2</option>
+                                    <option value="3">ห้อง 3</option>
+                                </select>
+                            </div>
+                            <div class="relative">
+                                <i class="fas fa-search absolute left-3 top-2.5 text-gray-400"></i>
+                                <input type="text" id="score-search" placeholder="ค้นหาชื่อ..." class="border border-gray-300 rounded-full pl-9 pr-4 py-1.5 text-sm outline-none focus:ring-2 focus:ring-brand-500 transition" onkeyup="filterTable('score-search', 'scores-tbody')">
+                            </div>
+                        </div>
+                        <div class="table-container overflow-x-auto">
+                            <table class="w-full text-left whitespace-nowrap">
+                                <thead class="bg-gray-100 text-gray-600 text-sm">
+                                    <tr>
+                                        <th class="p-3 border-b">รหัส</th>
+                                        <th class="p-3 border-b">ชื่อ-สกุล</th>
+                                        <th class="p-3 border-b text-center">ชั้น/ห้อง</th>
+                                        <th class="p-3 border-b text-center text-orange-700 bg-orange-100/50">คะแนนก่อนเรียน<br><span class="text-xs font-normal">(เต็ม 10)</span></th>
+                                        <th class="p-3 border-b text-center text-green-700 bg-green-100/50">คะแนนหลังเรียน<br><span class="text-xs font-normal">(เต็ม 10)</span></th>
+                                        <th class="p-3 border-b text-center bg-gray-50">ค่าพัฒนา</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="scores-tbody" class="text-sm"></tbody>
+                            </table>
+                        </div>
+                        <div class="p-4 bg-gray-50 border-t flex justify-end rounded-b-xl sticky bottom-0 z-10 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+                            <button onclick="submitScores()" class="bg-brand-600 hover:bg-brand-700 text-white px-6 py-2.5 rounded-lg shadow-md font-medium transition flex items-center">
+                                <i class="fas fa-save mr-2"></i>บันทึกคะแนน
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- View: Manage Students (Admin) -->
+                <section id="view-students" class="view-section">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                        <div class="p-4 bg-gray-50 border-b flex flex-wrap justify-between items-center gap-4 rounded-t-xl">
+                            <h3 class="font-bold"><i class="fas fa-user-graduate mr-2 text-brand-600"></i>จัดการนักเรียน</h3>
+                            <div class="flex gap-2">
+                                <input type="text" id="stu-search" placeholder="ค้นหา..." class="border border-gray-300 rounded-full px-4 py-1.5 text-sm outline-none focus:ring-2 focus:ring-brand-500" onkeyup="filterTable('stu-search', 'students-tbody')">
+                                <button onclick="openStudentModal()" class="bg-brand-600 hover:bg-brand-700 text-white px-4 py-1.5 rounded-lg text-sm shadow transition flex items-center">
+                                    <i class="fas fa-plus mr-1"></i>เพิ่มนักเรียน
+                                </button>
+                            </div>
+                        </div>
+                        <div class="table-container overflow-x-auto">
+                            <table class="w-full text-left text-sm whitespace-nowrap">
+                                <thead class="bg-gray-100 text-gray-600">
+                                    <tr>
+                                        <th class="p-3 border-b">รหัส</th>
+                                        <th class="p-3 border-b">ชื่อ-สกุล</th>
+                                        <th class="p-3 border-b text-center">เพศ</th>
+                                        <th class="p-3 border-b text-center">ชั้น/ห้อง</th>
+                                        <th class="p-3 border-b text-center">จัดการ</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="students-tbody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- View: Manage Users (Admin) -->
+                <section id="view-users" class="view-section">
+                     <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                        <div class="p-4 bg-gray-50 border-b flex flex-wrap justify-between items-center gap-4 rounded-t-xl">
+                            <h3 class="font-bold"><i class="fas fa-users-cog mr-2 text-brand-600"></i>จัดการบุคลากร (ครู/ผอ.)</h3>
+                            <button onclick="openUserModal()" class="bg-brand-600 hover:bg-brand-700 text-white px-4 py-1.5 rounded-lg text-sm shadow transition flex items-center"><i class="fas fa-plus mr-1"></i>เพิ่มผู้ใช้</button>
+                        </div>
+                        <div class="table-container overflow-x-auto">
+                            <table class="w-full text-left text-sm whitespace-nowrap">
+                                <thead class="bg-gray-100 text-gray-600">
+                                    <tr>
+                                        <th class="p-3 border-b">Username</th>
+                                        <th class="p-3 border-b">ชื่อ-สกุล</th>
+                                        <th class="p-3 border-b">สิทธิ์</th>
+                                        <th class="p-3 border-b text-center">ประจำชั้น</th>
+                                        <th class="p-3 border-b text-center">จัดการ</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="users-tbody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- View: Profile -->
+                <section id="view-profile" class="view-section max-w-md mx-auto mt-4">
+                    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+                        <div class="flex flex-col items-center mb-6">
+                            <div class="w-20 h-20 bg-brand-100 rounded-full flex items-center justify-center text-brand-600 text-3xl mb-3"><i class="fas fa-user"></i></div>
+                            <h3 class="font-bold text-xl text-gray-800">ข้อมูลส่วนตัว</h3>
+                            <p class="text-sm text-gray-500">แก้ไขข้อมูลส่วนตัวและรหัสผ่าน</p>
+                        </div>
+                        <form onsubmit="saveProfile(event)" class="space-y-4 text-sm">
+                            <div class="grid grid-cols-3 gap-3">
+                                <div>
+                                    <label class="block text-gray-700 font-medium mb-1">คำนำหน้า</label>
+                                    <select id="prof-title" class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-brand-500 outline-none">
+                                        <option value="นาย">นาย</option><option value="นาง">นาง</option><option value="นางสาว">นางสาว</option>
+                                    </select>
+                                </div>
+                                <div class="col-span-2">
+                                    <label class="block text-gray-700 font-medium mb-1">ชื่อ</label>
+                                    <input type="text" id="prof-first" required class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-brand-500 outline-none">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-medium mb-1">สกุล</label>
+                                <input type="text" id="prof-last" required class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-brand-500 outline-none">
+                            </div>
+                            <div class="pt-2 border-t mt-4">
+                                <label class="block text-gray-700 font-medium mb-1">ตั้งรหัสผ่านใหม่ <span class="text-xs text-gray-400 font-normal">(เว้นว่างหากไม่ต้องการเปลี่ยน)</span></label>
+                                <input type="password" id="prof-pass" class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-brand-500 outline-none placeholder-gray-300" placeholder="••••••••">
+                            </div>
+                            <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-medium py-3 rounded-lg shadow-md mt-4 transition">บันทึกข้อมูลส่วนตัว</button>
+                        </form>
+                    </div>
+                </section>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- Student Modal -->
+    <div id="student-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md animate-[fadeIn_0.2s]">
+            <h3 id="student-modal-title" class="font-bold text-xl text-gray-800 mb-5 border-b pb-3">เพิ่มนักเรียน</h3>
+            <form onsubmit="saveStudent(event)" class="space-y-4 text-sm">
+                <input type="hidden" id="stu-row">
+                <div>
+                    <label class="block font-medium text-gray-700 mb-1">รหัสนักเรียน</label>
+                    <input type="text" id="stu-id" required class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-brand-500 outline-none">
+                </div>
+                <div class="grid grid-cols-3 gap-3">
+                    <div>
+                        <label class="block font-medium text-gray-700 mb-1">คำนำหน้า</label>
+                        <select id="stu-title" class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-brand-500 outline-none bg-gray-50" onchange="autoGender()" required>
+                            <option value="">เลือก</option>
+                            <option value="เด็กชาย">เด็กชาย</option><option value="เด็กหญิง">เด็กหญิง</option>
+                            <option value="นาย">นาย</option><option value="นางสาว">นางสาว</option>
+                        </select>
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block font-medium text-gray-700 mb-1">ชื่อ</label>
+                        <input type="text" id="stu-first" required class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-brand-500 outline-none">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="col-span-2">
+                        <label class="block font-medium text-gray-700 mb-1">สกุล</label>
+                        <input type="text" id="stu-last" required class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-brand-500 outline-none">
+                    </div>
+                </div>
+                
+                <div class="bg-blue-50 p-3 rounded-lg border border-blue-100 flex items-center justify-between">
+                    <span class="text-blue-800 font-medium text-xs">เพศ (กำหนดอัตโนมัติจากคำนำหน้า)</span>
+                    <input type="text" id="stu-gender" readonly class="w-16 border-none bg-transparent text-right text-blue-700 font-bold outline-none cursor-default">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-medium text-gray-700 mb-1">ระดับชั้น</label>
+                        <select id="stu-class" class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-brand-500 outline-none" required>
+                            <option value="ป.4">ป.4</option><option value="ป.5">ป.5</option><option value="ป.6">ป.6</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-medium text-gray-700 mb-1">ห้อง</label>
+                        <input type="number" id="stu-room" required class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-brand-500 outline-none" min="1" value="1">
+                    </div>
+                </div>
+                <div class="flex justify-end gap-3 mt-8 border-t pt-4">
+                    <button type="button" onclick="closeModal('student-modal')" class="px-5 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium rounded-lg transition">ยกเลิก</button>
+                    <button type="submit" class="px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-medium rounded-lg shadow transition">บันทึกข้อมูล</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- User Modal -->
+    <div id="user-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md animate-[fadeIn_0.2s]">
+            <h3 id="user-modal-title" class="font-bold text-xl text-gray-800 mb-5 border-b pb-3">ข้อมูลบุคลากร</h3>
+            <form onsubmit="saveUser(event)" class="space-y-4 text-sm">
+                <input type="hidden" id="usr-row">
+                <div>
+                    <label class="block font-medium text-gray-700 mb-1">Username <span class="text-xs text-gray-500 font-normal">(ใช้สำหรับเข้าสู่ระบบ)</span></label>
+                    <input type="text" id="usr-uname" required class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-brand-500 outline-none">
+                </div>
+                <div class="grid grid-cols-3 gap-3">
+                    <div>
+                        <label class="block font-medium text-gray-700 mb-1">คำนำหน้า</label>
+                        <select id="usr-title" class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-brand-500 outline-none bg-gray-50" required>
+                            <option value="นาย">นาย</option><option value="นาง">นาง</option><option value="นางสาว">นางสาว</option>
+                        </select>
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block font-medium text-gray-700 mb-1">ชื่อ</label>
+                        <input type="text" id="usr-first" required class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-brand-500 outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="block font-medium text-gray-700 mb-1">สกุล</label>
+                    <input type="text" id="usr-last" required class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-brand-500 outline-none">
+                </div>
+                <div class="grid grid-cols-2 gap-3 bg-gray-50 p-3 rounded-lg border border-gray-200">
+                    <div>
+                        <label class="block font-medium text-gray-700 mb-1">สิทธิ์การใช้งาน</label>
+                        <select id="usr-role" class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-brand-500 outline-none" required onchange="toggleHomeroom()">
+                            <option value="teacher">ครูผู้สอน</option><option value="director">ผู้อำนวยการ</option><option value="admin">ผู้ดูแลระบบ</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-medium text-gray-700 mb-1">ประจำชั้น</label>
+                        <input type="text" id="usr-room" placeholder="เช่น ป.4/1" class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-brand-500 outline-none">
+                    </div>
+                </div>
+                <p class="text-[11px] text-amber-600 bg-amber-50 p-2 rounded border border-amber-100 mt-2">
+                    <i class="fas fa-info-circle mr-1"></i> รหัสผ่านเริ่มต้นสำหรับผู้ใช้ใหม่คือ <b>"password"</b>
+                </p>
+                <div class="flex justify-end gap-3 mt-6 border-t pt-4">
+                    <button type="button" onclick="closeModal('user-modal')" class="px-5 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium rounded-lg transition">ยกเลิก</button>
+                    <button type="submit" class="px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-medium rounded-lg shadow transition">บันทึกข้อมูล</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. MOCK GAS ENVIRONMENT (สำหรับการจำลองเพื่อให้พรีวิวในหน้าต่างนี้ได้) ---
+        // เมื่อนำไปใช้จริงใน Google Apps Script โค้ดส่วนนี้จะถูกข้ามไปใช้งาน google.script.run แทนอัตโนมัติ
+        const isGAS = typeof google !== 'undefined' && google.script;
+        
+        let mockDB = {
+            users: [
+                { row: 2, id: 'U1', username: 'admin', role: 'admin', title: 'นาย', firstName: 'ผู้ดูแล', lastName: 'ระบบ', homeroom: 'ทั้งหมด' },
+                { row: 3, id: 'U2', username: 'director', role: 'director', title: 'นาย', firstName: 'สมศักดิ์', lastName: 'ผู้อำนวยการ', homeroom: 'ทั้งหมด' },
+                { row: 4, id: 'U3', username: 'teacher4', role: 'teacher', title: 'นาง', firstName: 'สมศรี', lastName: 'ครูป.4', homeroom: 'ป.4/1' }
+            ],
+            students: [
+                { row: 2, studentId: '664001', title: 'เด็กชาย', firstName: 'รักเรียน', lastName: 'เพียรวิชา', name: 'เด็กชายรักเรียน เพียรวิชา', gender: 'ชาย', class: 'ป.4', room: '1', preScore: 3, postScore: 8 },
+                { row: 3, studentId: '664002', title: 'เด็กหญิง', firstName: 'ใจดี', lastName: 'มีสุข', name: 'เด็กหญิงใจดี มีสุข', gender: 'หญิง', class: 'ป.4', room: '1', preScore: 4, postScore: '' },
+                { row: 4, studentId: '665001', title: 'เด็กชาย', firstName: 'กล้าหาญ', lastName: 'ชาญชัย', name: 'เด็กชายกล้าหาญ ชาญชัย', gender: 'ชาย', class: 'ป.5', room: '1', preScore: 5, postScore: 9 },
+                { row: 5, studentId: '666001', title: 'เด็กหญิง', firstName: 'ใฝ่รู้', lastName: 'คู่คุณธรรม', name: 'เด็กหญิงใฝ่รู้ คู่คุณธรรม', gender: 'หญิง', class: 'ป.6', room: '1', preScore: 2, postScore: 7 },
+                { row: 6, studentId: '666002', title: 'เด็กชาย', firstName: 'เก่งกาจ', lastName: 'อาจหาญ', name: 'เด็กชายเก่งกาจ อาจหาญ', gender: 'ชาย', class: 'ป.6', room: '1', preScore: 8, postScore: 10 }
+            ]
+        };
+
+        function serverCall(funcName, ...args) {
+            return new Promise((resolve, reject) => {
+                if (isGAS) {
+                    google.script.run
+                        .withSuccessHandler(resolve)
+                        .withFailureHandler(reject)
+                        [funcName](...args);
+                } else {
+                    // MOCK LOGIC FOR PREVIEW
+                    console.log(`Mock calling: ${funcName}`, args);
+                    setTimeout(() => {
+                        try {
+                            if (funcName === 'setupDatabase') resolve("Mock Setup Complete");
+                            else if (funcName === 'verifyLogin') {
+                                const u = mockDB.users.find(x => x.username === args[0] && args[1] === 'password');
+                                resolve(u ? { success: true, user: {...u, name: u.title+u.firstName+' '+u.lastName} } : { success: false, message: 'รหัสผิด' });
+                            }
+                            else if (funcName === 'getStudents') resolve(JSON.parse(JSON.stringify(mockDB.students)));
+                            else if (funcName === 'getUsers') resolve(JSON.parse(JSON.stringify(mockDB.users)));
+                            else if (funcName === 'saveScores') {
+                                args[0].forEach(score => {
+                                    const s = mockDB.students.find(x => x.row == score.row);
+                                    if(s) {
+                                        if(score.pre !== undefined) s.preScore = score.pre;
+                                        if(score.post !== undefined) s.postScore = score.post;
+                                    }
+                                });
+                                resolve({success:true});
+                            }
+                            else if (funcName === 'saveStudent') {
+                                const data = args[0]; const isEdit = args[1];
+                                if(isEdit) {
+                                    const idx = mockDB.students.findIndex(x => x.row == data.row);
+                                    mockDB.students[idx] = {...mockDB.students[idx], ...data, name: data.title+data.firstName+' '+data.lastName};
+                                } else {
+                                    mockDB.students.push({...data, row: Date.now(), preScore:'', postScore:'', name: data.title+data.firstName+' '+data.lastName});
+                                }
+                                resolve({success:true});
+                            }
+                            else if (funcName === 'deleteStudent') { mockDB.students = mockDB.students.filter(x => x.row != args[0]); resolve({success:true}); }
+                            else if (funcName === 'saveUser') {
+                                const data = args[0]; const isEdit = args[1];
+                                if(isEdit) {
+                                    const idx = mockDB.users.findIndex(x => x.row == data.row);
+                                    mockDB.users[idx] = {...mockDB.users[idx], ...data};
+                                } else { mockDB.users.push({...data, row: Date.now()}); }
+                                resolve({success:true});
+                            }
+                            else if (funcName === 'updateProfile') { resolve({success:true}); }
+                            else { reject("Function not mocked"); }
+                        } catch (e) { reject(e); }
+                    }, 300); // Simulate network delay
+                }
+            });
+        }
+
+        // --- 2. GLOBAL STATE & INIT ---
+        let allStudents = [];
+        let currentUser = null;
+        let modifiedScores = {};
+        let charts = {};
+
+        async function initApp() {
+            try {
+                // Initialize setup (creates sheets/headers on first run in GAS)
+                await serverCall('setupDatabase');
+                allStudents = await serverCall('getStudents');
+                document.getElementById('global-loader').style.display = 'none';
+                setupFilters();
+                renderPublicDashboard();
+            } catch(e) {
+                console.error(e);
+                document.getElementById('loader-text').innerText = 'เกิดข้อผิดพลาด กรุณารีเฟรช';
+            }
+        }
+        window.addEventListener('DOMContentLoaded', initApp);
+
+        // --- 3. UI HELPERS ---
+        window.showLandingPage = function() {
+            document.getElementById('public-landing-section').classList.remove('hidden');
+            document.getElementById('public-dashboard-section').classList.add('hidden');
+        };
+
+        window.showPublicDashboard = function() {
+            document.getElementById('public-landing-section').classList.add('hidden');
+            document.getElementById('public-dashboard-section').classList.remove('hidden');
+            renderPublicDashboard();
+        };
+
+        const showLogin = () => document.getElementById('login-modal').classList.remove('hidden');
+        const hideLogin = () => document.getElementById('login-modal').classList.add('hidden');
+        const toggleSidebar = () => {
+            document.getElementById('sidebar').classList.toggle('-translate-x-full');
+            document.getElementById('sidebar-overlay').classList.toggle('hidden');
+        };
+        const closeModal = (id) => document.getElementById(id).classList.add('hidden');
+        const showLoader = (text = 'กำลังประมวลผล...') => {
+            document.getElementById('loader-text').innerText = text;
+            document.getElementById('global-loader').style.display = 'flex';
+        };
+        const hideLoader = () => document.getElementById('global-loader').style.display = 'none';
+
+        // --- 4. AUTHENTICATION & ENVIRONMENT ---
+        async function handleLogin(e) {
+            e.preventDefault();
+            const u = document.getElementById('username').value;
+            const p = document.getElementById('password').value;
+            showLoader('กำลังเข้าสู่ระบบ...');
+            try {
+                const res = await serverCall('verifyLogin', u, p);
+                hideLoader();
+                if (res.success) {
+                    currentUser = res.user;
+                    hideLogin();
+                    document.getElementById('username').value = '';
+                    document.getElementById('password').value = '';
+                    
+                    document.getElementById('public-container').classList.add('hidden');
+                    document.getElementById('public-container').classList.remove('active');
+                    document.getElementById('app-container').classList.remove('hidden');
+                    
+                    setupUserEnvironment();
+                    Swal.fire({title: 'สำเร็จ', text: `ยินดีต้อนรับ ${currentUser.name}`, icon: 'success', timer: 1500, showConfirmButton: false});
+                } else {
+                    Swal.fire('ข้อผิดพลาด', res.message, 'error');
+                }
+            } catch(err) { hideLoader(); Swal.fire('Error', String(err), 'error'); }
+        }
+
+        function handleLogout() {
+            currentUser = null;
+            document.getElementById('app-container').classList.add('hidden');
+            document.getElementById('public-container').classList.remove('hidden');
+            document.getElementById('public-container').classList.add('active');
+            showLandingPage();
+            renderPublicDashboard();
+        }
+
+        function setupUserEnvironment() {
+            document.getElementById('user-display-name').innerText = currentUser.name;
+            const roles = {'admin': 'ผู้ดูแลระบบ', 'director': 'ผู้อำนวยการ', 'teacher': 'ครูผู้สอน'};
+            document.getElementById('user-display-role').innerText = roles[currentUser.role];
+            document.getElementById('user-display-room').innerText = currentUser.homeroom;
+            
+            // Setup Profile Form
+            document.getElementById('prof-title').value = currentUser.title;
+            document.getElementById('prof-first').value = currentUser.firstName;
+            document.getElementById('prof-last').value = currentUser.lastName;
+
+            // Generate Menus based on Role
+            const menu = document.getElementById('sidebar-menu');
+            let mHtml = `<button onclick="switchView('view-dashboard')" class="menu-btn w-full text-left p-3 rounded-lg hover:bg-brand-700 transition flex items-center gap-3 text-sm font-medium"><i class="fas fa-chart-pie w-5 text-center"></i> แดชบอร์ดสรุปผล</button>`;
+            
+            if(['admin', 'teacher'].includes(currentUser.role)) {
+                mHtml += `<button onclick="switchView('view-scores')" class="menu-btn w-full text-left p-3 rounded-lg hover:bg-brand-700 transition flex items-center gap-3 text-sm font-medium"><i class="fas fa-edit w-5 text-center"></i> บันทึกคะแนนสอบ</button>`;
+            }
+            if(currentUser.role === 'admin') {
+                mHtml += `<div class="pt-4 pb-1"><p class="text-[10px] uppercase text-brand-400 font-bold tracking-wider px-3">สำหรับผู้ดูแลระบบ</p></div>`;
+                mHtml += `<button onclick="switchView('view-students')" class="menu-btn w-full text-left p-3 rounded-lg hover:bg-brand-700 transition flex items-center gap-3 text-sm font-medium"><i class="fas fa-user-graduate w-5 text-center"></i> จัดการข้อมูลนักเรียน</button>`;
+                mHtml += `<button onclick="switchView('view-users')" class="menu-btn w-full text-left p-3 rounded-lg hover:bg-brand-700 transition flex items-center gap-3 text-sm font-medium"><i class="fas fa-users-cog w-5 text-center"></i> จัดการข้อมูลบุคลากร</button>`;
+            }
+            mHtml += `<div class="pt-4 pb-1"><p class="text-[10px] uppercase text-brand-400 font-bold tracking-wider px-3">การตั้งค่า</p></div>`;
+            mHtml += `<button onclick="switchView('view-profile')" class="menu-btn w-full text-left p-3 rounded-lg hover:bg-brand-700 transition flex items-center gap-3 text-sm font-medium"><i class="fas fa-user-cog w-5 text-center"></i> ข้อมูลส่วนตัว</button>`;
+            menu.innerHTML = mHtml;
+
+            // Setup Filters
+            setupFilters();
+            switchView('view-dashboard');
+        }
+
+        function setupFilters() {
+            // ดึงข้อมูลชั้นเรียนทั้งหมด
+            const classes = [...new Set(allStudents.map(s => s.class))].sort();
+            let opt = '<option value="all">ทุกระดับชั้น</option>';
+            classes.forEach(c => opt += `<option value="${c}">${c}</option>`);
+            
+            document.getElementById('pub-class-filter').innerHTML = opt;
+            document.getElementById('dash-class-filter').innerHTML = opt;
+            document.getElementById('score-class-filter').innerHTML = opt;
+            
+            // ดึงข้อมูลห้องเรียนทั้งหมด
+            const rooms = [...new Set(allStudents.map(s => s.room))].sort();
+            let roomOpt = '<option value="all">ทุกห้อง</option>';
+            rooms.forEach(r => roomOpt += `<option value="${r}">ห้อง ${r}</option>`);
+            
+            document.getElementById('pub-room-filter').innerHTML = roomOpt;
+            document.getElementById('dash-room-filter').innerHTML = roomOpt;
+            document.getElementById('score-room-filter').innerHTML = roomOpt;
+            
+            // จัดการสิทธิ์ครู
+            if (currentUser && currentUser.role === 'teacher') {
+                const tClass = currentUser.homeroom.split('/')[0];
+                const tRoom = currentUser.homeroom.split('/')[1] || '1';
+                
+                document.getElementById('dash-class-filter').value = tClass;
+                document.getElementById('score-class-filter').value = tClass;
+                document.getElementById('score-room-filter').value = tRoom;
+                document.getElementById('dash-room-filter').value = tRoom;
+                
+                document.getElementById('score-class-filter').disabled = true;
+                document.getElementById('score-room-filter').disabled = true;
+            }
+        }
+
+        function switchView(viewId) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.menu-btn').forEach(btn => btn.classList.remove('bg-brand-700', 'text-white'));
+            
+            document.getElementById(viewId).classList.add('active');
+            const activeBtn = Array.from(document.querySelectorAll('.menu-btn')).find(b => b.getAttribute('onclick').includes(viewId));
+            if(activeBtn) activeBtn.classList.add('bg-brand-700', 'text-white');
+
+            const titles = {
+                'view-dashboard':'แดชบอร์ดสรุปผลการเรียน', 
+                'view-scores':'บันทึกคะแนนการสอบ (เต็ม 10 คะแนน)', 
+                'view-students':'จัดการข้อมูลรายชื่อนักเรียน', 
+                'view-users':'จัดการสิทธิ์และบุคลากร', 
+                'view-profile':'แก้ไขข้อมูลส่วนตัว'
+            };
+            document.getElementById('page-title').innerText = titles[viewId];
+
+            if(window.innerWidth < 768) toggleSidebar();
+
+            // Load data for view
+            if(viewId === 'view-dashboard') renderInternalDashboard();
+            if(viewId === 'view-scores') loadScoresTable();
+            if(viewId === 'view-students') renderStudentsTable();
+            if(viewId === 'view-users') loadUsers();
+        }
+
+        // --- 5. DASHBOARDS LOGIC ---
+        function calculateDetailedStats(data, phase = 'all', groupMode = 'class') {
+            const result = {
+                total: data.length, tested: 0,
+                testedPre: 0, testedPost: 0, testedBoth: 0,
+                grades: { ex: 0, vg: 0, g: 0, f: 0, ni: 0 },
+                groups: {},
+                sumPre: 0, sumPost: 0, sumImp: 0, pass: 0
+            };
+
+            data.forEach(s => {
+                // จัดกลุ่มตามโหมดที่เลือก (class = ป.4, room = ป.4/1)
+                const groupKey = groupMode === 'room' ? `${s.class}/${s.room}` : s.class;
+                
+                if (!result.groups[groupKey]) {
+                    result.groups[groupKey] = { name: groupKey, total: 0, tested: 0, testedPre: 0, testedPost: 0, testedBoth: 0, sumPre: 0, sumPost: 0, sumImp: 0, pass: 0, fail: 0 };
+                }
+                result.groups[groupKey].total++;
+
+                const hasPre = s.preScore !== '';
+                const hasPost = s.postScore !== '';
+                const pre = Number(s.preScore);
+                const post = Number(s.postScore);
+
+                if (hasPre) {
+                    result.testedPre++;
+                    result.sumPre += pre;
+                    result.groups[groupKey].testedPre++; 
+                    result.groups[groupKey].sumPre += pre;
+                }
+                if (hasPost) {
+                    result.testedPost++;
+                    result.sumPost += post;
+                    result.groups[groupKey].testedPost++; 
+                    result.groups[groupKey].sumPost += post;
+                }
+                if (hasPre && hasPost) {
+                    result.testedBoth++;
+                    const imp = post - pre;
+                    result.sumImp += imp;
+                    result.groups[groupKey].testedBoth++; 
+                    result.groups[groupKey].sumImp += imp;
+                }
+
+                let scoreToEval = null;
+                if (phase === 'pre' && hasPre) scoreToEval = pre;
+                else if (phase === 'post' && hasPost) scoreToEval = post;
+                else if (phase === 'all' && hasPost) scoreToEval = post;
+
+                if (scoreToEval !== null) {
+                    result.tested++;
+                    result.groups[groupKey].tested++;
+
+                    if (scoreToEval >= 9) result.grades.ex++;
+                    else if (scoreToEval >= 8) result.grades.vg++;
+                    else if (scoreToEval >= 7) result.grades.g++;
+                    else if (scoreToEval >= 5) result.grades.f++;
+                    else result.grades.ni++;
+
+                    if (scoreToEval >= 5) {
+                        result.pass++;
+                        result.groups[groupKey].pass++;
+                    } else {
+                        result.groups[groupKey].fail++;
+                    }
+                }
+            });
+
+            // สร้าง Array รายชื่อกลุ่มเพื่อเรียงลำดับในตารางและกราฟ
+            result.sortedKeys = Object.keys(result.groups).sort();
+            return result;
+        }
+
+        function createStatCards(stats, phase) {
+            const avgPre = stats.testedPre ? (stats.sumPre / stats.testedPre).toFixed(2) : '0.00';
+            const avgPost = stats.testedPost ? (stats.sumPost / stats.testedPost).toFixed(2) : '0.00';
+            const avgImp = stats.testedBoth ? (stats.sumImp / stats.testedBoth).toFixed(2) : '0.00';
+            const passRate = stats.tested ? Math.round((stats.pass / stats.tested) * 100) : 0;
+            
+            let phaseText = phase === 'pre' ? 'ใช้คะแนนก่อนเรียนประเมิน' : (phase === 'post' ? 'ใช้คะแนนหลังเรียนประเมิน' : 'ใช้คะแนนหลังเรียนประเมินภาพรวม');
+
+            return `
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                    <div class="bg-indigo-50 p-5 rounded-xl border border-indigo-100 flex flex-col justify-center items-center shadow-sm">
+                        <div class="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 mb-2"><i class="fas fa-users"></i></div>
+                        <p class="text-xs text-indigo-700 mb-1 font-medium">นักเรียนทั้งหมด</p>
+                        <p class="text-3xl font-bold text-indigo-900">${stats.total}</p>
+                        <p class="text-[10px] text-indigo-500 mt-1">คน</p>
+                    </div>
+                    <div class="bg-amber-50 p-5 rounded-xl border border-amber-100 flex flex-col justify-center items-center shadow-sm">
+                        <div class="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center text-amber-600 mb-2"><i class="fas fa-file-alt"></i></div>
+                        <p class="text-xs text-amber-700 mb-1 font-medium">คะแนนเฉลี่ยก่อนเรียน</p>
+                        <p class="text-3xl font-bold text-amber-900">${avgPre}</p>
+                        <p class="text-[10px] text-amber-500 mt-1">เข้าสอบ ${stats.testedPre} คน</p>
+                    </div>
+                    <div class="bg-emerald-50 p-5 rounded-xl border border-emerald-100 flex flex-col justify-center items-center shadow-sm">
+                        <div class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-600 mb-2"><i class="fas fa-check-circle"></i></div>
+                        <p class="text-xs text-emerald-700 mb-1 font-medium">คะแนนเฉลี่ยหลังเรียน</p>
+                        <p class="text-3xl font-bold text-emerald-900">${avgPost}</p>
+                        <p class="text-[10px] text-emerald-500 mt-1">เข้าสอบ ${stats.testedPost} คน</p>
+                    </div>
+                    <div class="bg-purple-50 p-5 rounded-xl border border-purple-100 flex flex-col justify-center items-center shadow-sm relative overflow-hidden">
+                        <div class="absolute -right-4 -top-4 text-purple-100 opacity-50"><i class="fas fa-chart-line text-6xl"></i></div>
+                        <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 mb-2 z-10"><i class="fas fa-arrow-up"></i></div>
+                        <p class="text-xs text-purple-700 mb-1 font-medium z-10">ค่าพัฒนาเฉลี่ย</p>
+                        <p class="text-3xl font-bold text-purple-900 z-10">${avgImp > 0 ? '+'+avgImp : avgImp}</p>
+                        <p class="text-[10px] text-purple-500 mt-1 z-10">สอบครบทั้งสอง ${stats.testedBoth} คน</p>
+                    </div>
+                </div>
+
+                <h3 class="font-bold text-gray-700 mb-3 mt-6"><i class="fas fa-award text-yellow-500 mr-2"></i>สรุประดับคุณภาพและเกณฑ์การประเมิน</h3>
+                <div class="grid grid-cols-2 lg:grid-cols-6 gap-3">
+                    <div class="col-span-2 lg:col-span-1 bg-blue-50 p-3 rounded-xl border border-blue-100 text-center flex flex-col justify-center shadow-sm">
+                        <p class="text-xs text-blue-700 mb-1 font-medium">สอบผ่านเกณฑ์ (>=5)</p>
+                        <p class="text-3xl font-bold text-blue-900">${passRate}%</p>
+                        <p class="text-[10px] text-blue-500 mt-1">${phaseText}</p>
+                    </div>
+                    <div class="bg-green-50 p-3 rounded-xl border border-green-100 text-center shadow-sm flex flex-col justify-center">
+                        <p class="text-xs text-green-700 mb-1 font-medium">ดีเยี่ยม (9-10)</p>
+                        <p class="text-2xl font-bold text-green-900">${stats.grades.ex} <span class="text-xs font-normal text-green-600">คน</span></p>
+                    </div>
+                    <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-100 text-center shadow-sm flex flex-col justify-center">
+                        <p class="text-xs text-emerald-700 mb-1 font-medium">ดีมาก (8)</p>
+                        <p class="text-2xl font-bold text-emerald-900">${stats.grades.vg} <span class="text-xs font-normal text-emerald-600">คน</span></p>
+                    </div>
+                    <div class="bg-teal-50 p-3 rounded-xl border border-teal-100 text-center shadow-sm flex flex-col justify-center">
+                        <p class="text-xs text-teal-700 mb-1 font-medium">ดี (7)</p>
+                        <p class="text-2xl font-bold text-teal-900">${stats.grades.g} <span class="text-xs font-normal text-teal-600">คน</span></p>
+                    </div>
+                    <div class="bg-orange-50 p-3 rounded-xl border border-orange-100 text-center shadow-sm flex flex-col justify-center">
+                        <p class="text-xs text-orange-700 mb-1 font-medium">พอใช้ (5-6)</p>
+                        <p class="text-2xl font-bold text-orange-900">${stats.grades.f} <span class="text-xs font-normal text-orange-600">คน</span></p>
+                    </div>
+                    <div class="bg-red-50 p-3 rounded-xl border border-red-100 text-center shadow-sm flex flex-col justify-center">
+                        <p class="text-xs text-red-700 mb-1 font-medium">ปรับปรุง (<5)</p>
+                        <p class="text-2xl font-bold text-red-900">${stats.grades.ni} <span class="text-xs font-normal text-red-600">คน</span></p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderCharts(c1Id, c2Id, c3Id, c4Id, stats, phase) {
+            const labels = stats.sortedKeys;
+            
+            const avgPreData = labels.map(k => stats.groups[k].testedPre ? (stats.groups[k].sumPre / stats.groups[k].testedPre).toFixed(2) : 0);
+            const avgPostData = labels.map(k => stats.groups[k].testedPost ? (stats.groups[k].sumPost / stats.groups[k].testedPost).toFixed(2) : 0);
+            
+            const impPercentData = labels.map(k => {
+                if(!stats.groups[k].testedBoth) return 0;
+                const imp = stats.groups[k].sumImp / stats.groups[k].testedBoth;
+                return ((imp / 10) * 100).toFixed(1);
+            });
+
+            const passData = labels.map(k => stats.groups[k].pass);
+            const failData = labels.map(k => stats.groups[k].fail);
+
+            Chart.defaults.font.family = 'Sarabun';
+
+            // 1. Bar Chart (Pre vs Post)
+            let datasets1 = [];
+            if(phase === 'all' || phase === 'pre') datasets1.push({ label: 'ก่อนเรียน', data: avgPreData, backgroundColor: '#fbbf24', borderRadius: 4 });
+            if(phase === 'all' || phase === 'post') datasets1.push({ label: 'หลังเรียน', data: avgPostData, backgroundColor: '#34d399', borderRadius: 4 });
+
+            if(charts[c1Id]) charts[c1Id].destroy();
+            charts[c1Id] = new Chart(document.getElementById(c1Id), {
+                type: 'bar',
+                data: { labels: labels, datasets: datasets1 },
+                options: { responsive: true, plugins: { title: { display: true, text: 'เปรียบเทียบคะแนนเฉลี่ย (เต็ม 10)', font: {size: 14} } }, scales: { y: { max: 10 } } }
+            });
+
+            // 2. Bar Chart (% Improvement)
+            if(charts[c2Id]) charts[c2Id].destroy();
+            charts[c2Id] = new Chart(document.getElementById(c2Id), {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{ label: 'ร้อยละค่าพัฒนาเฉลี่ย', data: impPercentData, backgroundColor: '#a855f7', borderRadius: 4 }]
+                },
+                options: { responsive: true, plugins: { title: { display: true, text: 'ร้อยละของค่าพัฒนาเฉลี่ย', font: {size: 14} } }, scales: { y: { max: 100 } } }
+            });
+
+            // 3. Doughnut Chart (Grading) - ปรับสีให้ต่างกันชัดเจน
+            let titlePhase = phase === 'pre' ? '(ก่อนเรียน)' : (phase === 'post' ? '(หลังเรียน)' : '(ประเมินผลสัมฤทธิ์หลังเรียน)');
+            if(charts[c3Id]) charts[c3Id].destroy();
+            charts[c3Id] = new Chart(document.getElementById(c3Id), {
+                type: 'doughnut',
+                data: {
+                    labels: ['ดีเยี่ยม (9-10)', 'ดีมาก (8)', 'ดี (7)', 'พอใช้ (5-6)', 'ปรับปรุง (<5)'],
+                    datasets: [{ 
+                        data: [stats.grades.ex, stats.grades.vg, stats.grades.g, stats.grades.f, stats.grades.ni], 
+                        backgroundColor: ['#3b82f6', '#22c55e', '#eab308', '#f97316', '#ef4444'], // สี: น้ำเงิน, เขียว, เหลือง, ส้ม, แดง
+                        borderWidth: 0 
+                    }]
+                },
+                options: { responsive: true, plugins: { title: { display: true, text: `สัดส่วนระดับคุณภาพนักเรียน ${titlePhase}`, font: {size: 14} }, legend: { position: 'right', labels: { boxWidth: 12 } } } }
+            });
+
+            // 4. Stacked Bar (Pass/Fail)
+            if(charts[c4Id]) charts[c4Id].destroy();
+            charts[c4Id] = new Chart(document.getElementById(c4Id), {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: 'ผ่านเกณฑ์ (5-10)', data: passData, backgroundColor: '#4ade80', borderRadius: 4 },
+                        { label: 'ไม่ผ่าน/ปรับปรุง (0-4)', data: failData, backgroundColor: '#f87171', borderRadius: 4 }
+                    ]
+                },
+                options: { 
+                    responsive: true, 
+                    plugins: { title: { display: true, text: `จำนวนนักเรียนผ่าน/ไม่ผ่านเกณฑ์ ${titlePhase}`, font: {size: 14} } },
+                    scales: { x: { stacked: true }, y: { stacked: true } }
+                }
+            });
+        }
+
+        function renderSummaryTable(tbodyId, stats) {
+            const tbody = document.getElementById(tbodyId);
+            let html = '';
+            
+            stats.sortedKeys.forEach(k => {
+                const s = stats.groups[k];
+                if(s.total === 0) return;
+
+                const avgPre = s.testedPre ? (s.sumPre / s.testedPre).toFixed(2) : '-';
+                const avgPost = s.testedPost ? (s.sumPost / s.testedPost).toFixed(2) : '-';
+                const imp = s.testedBoth ? (s.sumImp / s.testedBoth).toFixed(2) : '-';
+                const impPer = s.testedBoth ? (((s.sumImp / s.testedBoth) / 10) * 100).toFixed(1) + '%' : '-';
+                const passRate = s.tested ? Math.round((s.pass / s.tested) * 100) + '%' : '-';
+                
+                html += `
+                    <tr class="border-b hover:bg-gray-50 transition">
+                        <td class="p-3 font-bold text-gray-800">${s.name}</td>
+                        <td class="p-3 text-center">${s.total}</td>
+                        <td class="p-3 text-center text-orange-600 bg-orange-50/30">${s.testedPre}</td>
+                        <td class="p-3 text-center text-green-600 bg-green-50/30">${s.testedPost}</td>
+                        <td class="p-3 text-center text-orange-700 bg-orange-50/30 font-medium">${avgPre}</td>
+                        <td class="p-3 text-center text-green-700 bg-green-50/30 font-medium">${avgPost}</td>
+                        <td class="p-3 text-center font-bold ${imp > 0 ? 'text-brand-600' : 'text-gray-500'}">${imp > 0 ? '+'+imp : imp}</td>
+                        <td class="p-3 text-center font-bold text-purple-700 bg-purple-50/50">${impPer}</td>
+                        <td class="p-3 text-center font-medium">${s.pass} <span class="text-xs text-gray-500">(${passRate})</span></td>
+                    </tr>
+                `;
+            });
+
+            // Total Row
+            const totAvgPre = stats.testedPre ? (stats.sumPre / stats.testedPre).toFixed(2) : '-';
+            const totAvgPost = stats.testedPost ? (stats.sumPost / stats.testedPost).toFixed(2) : '-';
+            const totImp = stats.testedBoth ? (stats.sumImp / stats.testedBoth).toFixed(2) : '-';
+            const totImpPer = stats.testedBoth ? (((stats.sumImp / stats.testedBoth) / 10) * 100).toFixed(1) + '%' : '-';
+            const totPassRate = stats.tested ? Math.round((stats.pass / stats.tested) * 100) + '%' : '-';
+
+            html += `
+                <tr class="bg-brand-50 font-bold text-brand-900 border-t-2 border-brand-200">
+                    <td class="p-3">รวมทั้งหมด</td>
+                    <td class="p-3 text-center">${stats.total}</td>
+                    <td class="p-3 text-center">${stats.testedPre}</td>
+                    <td class="p-3 text-center">${stats.testedPost}</td>
+                    <td class="p-3 text-center text-orange-700">${totAvgPre}</td>
+                    <td class="p-3 text-center text-green-700">${totAvgPost}</td>
+                    <td class="p-3 text-center text-brand-700">${totImp > 0 ? '+'+totImp : totImp}</td>
+                    <td class="p-3 text-center text-purple-800">${totImpPer}</td>
+                    <td class="p-3 text-center">${stats.pass} <span class="text-xs text-brand-600">(${totPassRate})</span></td>
+                </tr>
+            `;
+            tbody.innerHTML = html;
+        }
+
+        window.renderPublicDashboard = function() {
+            let data = [...allStudents];
+            const phase = document.getElementById('pub-phase-filter').value;
+            const cls = document.getElementById('pub-class-filter').value;
+            const room = document.getElementById('pub-room-filter').value;
+            const gen = document.getElementById('pub-gender-filter').value;
+            
+            if(cls !== 'all') data = data.filter(s => s.class === cls);
+            if(room !== 'all') data = data.filter(s => s.room == room);
+            if(gen !== 'all') data = data.filter(s => s.gender === gen);
+            
+            // ถ้าเลือกระบุชั้น ระบบจะสลับไปแสดงข้อมูลเจาะจงรายห้องอัตโนมัติ (เช่น ป.4/1, ป.4/2)
+            const groupMode = (cls !== 'all') ? 'room' : 'class';
+            
+            const stats = calculateDetailedStats(data, phase, groupMode);
+            document.getElementById('pub-stats').innerHTML = createStatCards(stats, phase);
+            renderCharts('pubChart1', 'pubChart2', 'pubChart3', 'pubChart4', stats, phase);
+            renderSummaryTable('pub-summary-table', stats);
+        }
+
+        window.renderInternalDashboard = function() {
+            let data = [...allStudents];
+            const phase = document.getElementById('dash-phase-filter').value;
+            const cls = document.getElementById('dash-class-filter').value;
+            const room = document.getElementById('dash-room-filter').value;
+            const gen = document.getElementById('dash-gender-filter').value;
+            
+            if(cls !== 'all') data = data.filter(s => s.class === cls);
+            if(room !== 'all') data = data.filter(s => s.room == room);
+            if(gen !== 'all') data = data.filter(s => s.gender === gen);
+            
+            // ถ้าเลือกระบุชั้น ระบบจะสลับไปแสดงข้อมูลเจาะจงรายห้องอัตโนมัติ
+            const groupMode = (cls !== 'all') ? 'room' : 'class';
+            
+            const stats = calculateDetailedStats(data, phase, groupMode);
+            document.getElementById('int-stats').innerHTML = createStatCards(stats, phase);
+            renderCharts('intChart1', 'intChart2', 'intChart3', 'intChart4', stats, phase);
+            renderSummaryTable('int-summary-table', stats);
+        }
+
+        // --- 6. SCORES MANAGEMENT ---
+        window.loadScoresTable = function() {
+            modifiedScores = {};
+            const cls = document.getElementById('score-class-filter').value;
+            const room = document.getElementById('score-room-filter').value;
+            
+            let data = allStudents;
+            if (cls !== 'all') data = data.filter(s => s.class === cls);
+            if (room !== 'all') data = data.filter(s => s.room == room);
+            
+            const tbody = document.getElementById('scores-tbody');
+            tbody.innerHTML = '';
+            
+            data.forEach(s => {
+                const tr = document.createElement('tr');
+                tr.className = 'border-b hover:bg-gray-100 transition';
+                const imp = (s.preScore !== '' && s.postScore !== '') ? (Number(s.postScore) - Number(s.preScore)) : '-';
+                const impColor = imp > 0 ? 'text-green-600' : (imp < 0 ? 'text-red-500' : 'text-gray-500');
+                
+                tr.innerHTML = `
+                    <td class="p-3 text-gray-500">${s.studentId}</td>
+                    <td class="p-3 font-medium text-gray-800">${s.name}</td>
+                    <td class="p-3 text-center text-sm">${s.class}/${s.room}</td>
+                    <td class="p-3 text-center bg-orange-50/30">
+                        <input type="number" min="0" max="10" class="w-20 border border-orange-200 rounded px-2 py-1.5 text-center font-medium focus:ring-2 focus:ring-orange-400 outline-none" value="${s.preScore}" oninput="markScoreChange(${s.row}, 'pre', this.value)" placeholder="-">
+                    </td>
+                    <td class="p-3 text-center bg-green-50/30">
+                        <input type="number" min="0" max="10" class="w-20 border border-green-200 rounded px-2 py-1.5 text-center font-medium focus:ring-2 focus:ring-green-400 outline-none" value="${s.postScore}" oninput="markScoreChange(${s.row}, 'post', this.value)" placeholder="-">
+                    </td>
+                    <td class="p-3 text-center font-bold text-lg bg-gray-50/50 ${impColor}" id="imp-${s.row}">${imp > 0 ? '+'+imp : imp}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        };
+
+        window.markScoreChange = function(row, type, val) {
+            if(!modifiedScores[row]) modifiedScores[row] = { row };
+            modifiedScores[row][type] = val;
+            
+            // คำนวณค่าพัฒนา (Improvement) ทันทีบนหน้าจอ
+            const s = allStudents.find(x => x.row == row);
+            const pre = modifiedScores[row].pre !== undefined ? modifiedScores[row].pre : s.preScore;
+            const post = modifiedScores[row].post !== undefined ? modifiedScores[row].post : s.postScore;
+            
+            const impCell = document.getElementById(`imp-${row}`);
+            if(pre !== '' && post !== '' && pre !== null && post !== null) {
+                const imp = Number(post) - Number(pre);
+                impCell.innerText = imp > 0 ? '+'+imp : imp;
+                impCell.className = `p-3 text-center font-bold text-lg bg-gray-50/50 ${imp > 0 ? 'text-green-600' : (imp < 0 ? 'text-red-500' : 'text-gray-500')}`;
+            } else {
+                impCell.innerText = '-';
+                impCell.className = 'p-3 text-center text-gray-400 font-bold text-lg bg-gray-50/50';
+            }
+        };
+
+        window.submitScores = async function() {
+            const updates = Object.values(modifiedScores);
+            if(updates.length === 0) return Swal.fire('ข้อมูลล่าสุดแล้ว', 'ไม่มีการเปลี่ยนแปลงข้อมูลคะแนน', 'info');
+            
+            // Validate Max 10 (คะแนนเต็ม 10)
+            for(let u of updates) {
+                if((u.pre !== undefined && u.pre !== '' && (u.pre > 10 || u.pre < 0)) || 
+                   (u.post !== undefined && u.post !== '' && (u.post > 10 || u.post < 0))){
+                    return Swal.fire('ข้อผิดพลาด', 'คะแนนที่กรอกต้องอยู่ระหว่าง 0 - 10 เท่านั้น', 'error');
+                }
+            }
+
+            showLoader('กำลังบันทึกคะแนนลงระบบ...');
+            try {
+                await serverCall('saveScores', updates);
+                // Update local memory to reflect new state
+                updates.forEach(u => {
+                    const s = allStudents.find(x => x.row == u.row);
+                    if(u.pre !== undefined) s.preScore = u.pre === '' ? '' : Number(u.pre);
+                    if(u.post !== undefined) s.postScore = u.post === '' ? '' : Number(u.post);
+                });
+                modifiedScores = {};
+                hideLoader();
+                Swal.fire('สำเร็จ', 'บันทึกคะแนนเรียบร้อยแล้ว', 'success');
+                renderInternalDashboard(); // Update stats background for the dashboard
+            } catch(e) { hideLoader(); Swal.fire('Error', String(e), 'error'); }
+        };
+
+        // --- 7. ADMIN MANAGEMENT (STUDENTS) ---
+        window.autoGender = function() {
+            const title = document.getElementById('stu-title').value;
+            const gen = document.getElementById('stu-gender');
+            // วิเคราะห์เพศจากคำนำหน้าโดยอัตโนมัติ
+            if (['เด็กชาย', 'นาย'].includes(title)) gen.value = 'ชาย';
+            else if (['เด็กหญิง', 'นางสาว', 'นาง'].includes(title)) gen.value = 'หญิง';
+            else gen.value = '';
+        }
+
+        window.renderStudentsTable = function() {
+            const tbody = document.getElementById('students-tbody');
+            tbody.innerHTML = '';
+            allStudents.forEach(s => {
+                tbody.innerHTML += `
+                    <tr class="border-b hover:bg-gray-50 transition">
+                        <td class="p-3 text-gray-500">${s.studentId}</td>
+                        <td class="p-3 font-medium">${s.name}</td>
+                        <td class="p-3 text-center"><span class="px-2 py-1 rounded-full text-[10px] ${s.gender==='ชาย'?'bg-blue-100 text-blue-700':'bg-pink-100 text-pink-700'}">${s.gender}</span></td>
+                        <td class="p-3 text-center">${s.class}/${s.room}</td>
+                        <td class="p-3 text-center">
+                            <button onclick="editStudent(${s.row})" class="text-blue-500 hover:bg-blue-100 p-2 rounded transition" title="แก้ไข"><i class="fas fa-edit"></i></button>
+                            <button onclick="deleteStudent(${s.row})" class="text-red-500 hover:bg-red-100 p-2 rounded transition" title="ลบ"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+        };
+
+        window.openStudentModal = () => {
+            document.getElementById('student-modal-title').innerText = 'เพิ่มข้อมูลนักเรียนใหม่';
+            document.getElementById('stu-row').value = '';
+            document.getElementById('stu-id').value = '';
+            document.getElementById('stu-title').value = '';
+            document.getElementById('stu-first').value = '';
+            document.getElementById('stu-last').value = '';
+            document.getElementById('stu-gender').value = '';
+            document.getElementById('stu-class').value = 'ป.4';
+            document.getElementById('stu-room').value = '1';
+            document.getElementById('student-modal').classList.remove('hidden');
+        };
+
+        window.editStudent = (row) => {
+            const s = allStudents.find(x => x.row == row);
+            document.getElementById('student-modal-title').innerText = 'แก้ไขข้อมูลนักเรียน';
+            document.getElementById('stu-row').value = s.row;
+            document.getElementById('stu-id').value = s.studentId;
+            document.getElementById('stu-title').value = s.title;
+            document.getElementById('stu-first').value = s.firstName;
+            document.getElementById('stu-last').value = s.lastName;
+            document.getElementById('stu-gender').value = s.gender;
+            document.getElementById('stu-class').value = s.class;
+            document.getElementById('stu-room').value = s.room;
+            document.getElementById('student-modal').classList.remove('hidden');
+        };
+
+        window.saveStudent = async (e) => {
+            e.preventDefault();
+            const data = {
+                row: document.getElementById('stu-row').value,
+                studentId: document.getElementById('stu-id').value,
+                title: document.getElementById('stu-title').value,
+                firstName: document.getElementById('stu-first').value,
+                lastName: document.getElementById('stu-last').value,
+                gender: document.getElementById('stu-gender').value,
+                class: document.getElementById('stu-class').value,
+                room: document.getElementById('stu-room').value,
+            };
+            if(!data.gender) return Swal.fire('แจ้งเตือน', 'กรุณาระบุคำนำหน้าให้ถูกต้องเพื่อกำหนดเพศ', 'warning');
+            
+            showLoader('กำลังบันทึกข้อมูลนักเรียน...');
+            try {
+                await serverCall('saveStudent', data, !!data.row);
+                allStudents = await serverCall('getStudents'); // Refresh Data from server
+                renderStudentsTable();
+                setupFilters();
+                closeModal('student-modal');
+                hideLoader();
+                Swal.fire('สำเร็จ', 'บันทึกข้อมูลเรียบร้อย', 'success');
+            } catch(e) { hideLoader(); Swal.fire('Error', String(e), 'error'); }
+        };
+
+        window.deleteStudent = (row) => {
+            Swal.fire({ title: 'ยืนยันการลบข้อมูล?', text: 'การลบข้อมูลจะไม่สามารถกู้คืนได้ (รวมถึงคะแนนด้วย)', icon: 'warning', showCancelButton: true, confirmButtonText: 'ใช่, ลบเลย', cancelButtonText: 'ยกเลิก', confirmButtonColor: '#ef4444' }).then(async (result) => {
+                if(result.isConfirmed) {
+                    showLoader('กำลังลบข้อมูล...');
+                    await serverCall('deleteStudent', row);
+                    allStudents = await serverCall('getStudents');
+                    renderStudentsTable();
+                    hideLoader();
+                    Swal.fire('สำเร็จ', 'ลบข้อมูลเรียบร้อย', 'success');
+                }
+            });
+        };
+
+        // --- 8. ADMIN MANAGEMENT (USERS) ---
+        window.toggleHomeroom = () => {
+            const r = document.getElementById('usr-role').value;
+            // เปิดปิดการแก้ไขประจำชั้น
+            document.getElementById('usr-room').disabled = (r === 'admin' || r === 'director');
+            if(r !== 'teacher') {
+                document.getElementById('usr-room').value = 'ทั้งหมด';
+                document.getElementById('usr-room').classList.add('bg-gray-100', 'text-gray-500');
+            } else {
+                document.getElementById('usr-room').value = '';
+                document.getElementById('usr-room').classList.remove('bg-gray-100', 'text-gray-500');
+            }
+        };
+
+        window.loadUsers = async () => {
+            showLoader('กำลังโหลดข้อมูลบุคลากร...');
+            const users = await serverCall('getUsers');
+            const tbody = document.getElementById('users-tbody');
+            tbody.innerHTML = '';
+            
+            const roleStyles = {
+                'admin': '<span class="bg-purple-100 text-purple-700 px-2 py-1 rounded text-xs">ผู้ดูแลระบบ</span>',
+                'director': '<span class="bg-amber-100 text-amber-700 px-2 py-1 rounded text-xs">ผู้อำนวยการ</span>',
+                'teacher': '<span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs">ครูผู้สอน</span>'
+            };
+
+            users.forEach(u => {
+                tbody.innerHTML += `
+                    <tr class="border-b hover:bg-gray-50 transition">
+                        <td class="p-3 text-gray-600 font-medium">${u.username}</td>
+                        <td class="p-3">${u.title}${u.firstName} ${u.lastName}</td>
+                        <td class="p-3">${roleStyles[u.role] || u.role}</td>
+                        <td class="p-3 text-center text-sm text-gray-500">${u.homeroom}</td>
+                        <td class="p-3 text-center">
+                            <button onclick="editUser(${u.row}, '${u.username}', '${u.title}', '${u.firstName}', '${u.lastName}', '${u.role}', '${u.homeroom}')" class="text-blue-500 hover:bg-blue-100 p-2 rounded transition"><i class="fas fa-edit"></i></button>
+                            <button onclick="deleteUser(${u.row})" class="text-red-500 hover:bg-red-100 p-2 rounded transition"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+            hideLoader();
+        };
+
+        window.openUserModal = () => {
+            document.getElementById('user-modal-title').innerText = 'เพิ่มข้อมูลบุคลากรใหม่';
+            document.getElementById('usr-row').value = '';
+            document.getElementById('usr-uname').value = '';
+            document.getElementById('usr-uname').readOnly = false;
+            document.getElementById('usr-uname').classList.remove('bg-gray-100', 'text-gray-500');
+            document.getElementById('usr-title').value = 'นาย';
+            document.getElementById('usr-first').value = '';
+            document.getElementById('usr-last').value = '';
+            document.getElementById('usr-role').value = 'teacher';
+            document.getElementById('usr-room').value = '';
+            document.getElementById('usr-room').disabled = false;
+            document.getElementById('user-modal').classList.remove('hidden');
+        };
+
+        window.editUser = (row, uname, title, first, last, role, room) => {
+            document.getElementById('user-modal-title').innerText = 'แก้ไขข้อมูลบุคลากร';
+            document.getElementById('usr-row').value = row;
+            document.getElementById('usr-uname').value = uname;
+            document.getElementById('usr-uname').readOnly = true; // ไม่อนุญาตให้แก้ Username ในภายหลัง
+            document.getElementById('usr-uname').classList.add('bg-gray-100', 'text-gray-500');
+            document.getElementById('usr-title').value = title;
+            document.getElementById('usr-first').value = first;
+            document.getElementById('usr-last').value = last;
+            document.getElementById('usr-role').value = role;
+            document.getElementById('usr-room').value = room;
+            toggleHomeroom();
+            document.getElementById('user-modal').classList.remove('hidden');
+        };
+
+        window.saveUser = async (e) => {
+            e.preventDefault();
+            const data = {
+                row: document.getElementById('usr-row').value,
+                username: document.getElementById('usr-uname').value,
+                title: document.getElementById('usr-title').value,
+                firstName: document.getElementById('usr-first').value,
+                lastName: document.getElementById('usr-last').value,
+                role: document.getElementById('usr-role').value,
+                homeroom: document.getElementById('usr-room').value,
+            };
+            showLoader('กำลังบันทึกข้อมูลบุคลากร...');
+            try {
+                await serverCall('saveUser', data, !!data.row);
+                loadUsers();
+                closeModal('user-modal');
+                hideLoader();
+                Swal.fire('สำเร็จ', 'บันทึกข้อมูลเรียบร้อย', 'success');
+            } catch(e) { hideLoader(); Swal.fire('Error', String(e), 'error'); }
+        };
+
+        window.deleteUser = (row) => {
+            // ป้องกันการลบตัวเอง (ถ้าจำเป็นต้องตรวจสอบเพิ่มเติม ควรเช็ค row กับ currentUser.row)
+            if(currentUser.row == row) return Swal.fire('คำเตือน', 'คุณไม่สามารถลบบัญชีของตนเองที่กำลังใช้งานอยู่ได้', 'warning');
+            
+            Swal.fire({ title: 'ยืนยันการลบผู้ใช้?', text: 'บัญชีนี้จะไม่สามารถเข้าสู่ระบบได้อีก', icon: 'warning', showCancelButton: true, confirmButtonText: 'ลบ', confirmButtonColor: '#ef4444' }).then(async (result) => {
+                if(result.isConfirmed) {
+                    showLoader('กำลังลบข้อมูล...');
+                    await serverCall('deleteUser', row);
+                    loadUsers();
+                    hideLoader();
+                    Swal.fire('สำเร็จ', 'ลบผู้ใช้เรียบร้อย', 'success');
+                }
+            });
+        };
+
+        // --- 9. PROFILE & UTILS ---
+        window.saveProfile = async (e) => {
+            e.preventDefault();
+            const t = document.getElementById('prof-title').value;
+            const f = document.getElementById('prof-first').value;
+            const l = document.getElementById('prof-last').value;
+            const p = document.getElementById('prof-pass').value;
+            
+            showLoader('กำลังอัปเดตโปรไฟล์...');
+            try {
+                await serverCall('updateProfile', currentUser.row, t, f, l, p);
+                currentUser.title = t; currentUser.firstName = f; currentUser.lastName = l;
+                currentUser.name = t + f + ' ' + l;
+                document.getElementById('user-display-name').innerText = currentUser.name;
+                document.getElementById('prof-pass').value = ''; // เคลียร์ช่องรหัสผ่าน
+                hideLoader();
+                Swal.fire('สำเร็จ', 'อัปเดตข้อมูลส่วนตัวเรียบร้อยแล้ว', 'success');
+            } catch(e) { hideLoader(); Swal.fire('Error', String(e), 'error'); }
+        };
+
+        // ระบบค้นหาแบบ Real-time ในตาราง (ค้นหาจากข้อความในแต่ละแถว)
+        window.filterTable = (inputId, tbodyId) => {
+            const filter = document.getElementById(inputId).value.toLowerCase();
+            const trs = document.getElementById(tbodyId).getElementsByTagName('tr');
+            for(let i=0; i<trs.length; i++) {
+                trs[i].style.display = trs[i].innerText.toLowerCase().includes(filter) ? '' : 'none';
+            }
+        };
+    </script>
+</body>
+</html>
